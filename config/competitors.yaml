@@ -1,0 +1,13 @@
+competitors:
+  - name: "OpenAI"
+    domain: "openai.com"
+    keywords: ["OpenAI", "ChatGPT", "GPT-4o", "Sora"]
+    categories: ["product", "partnership", "funding", "hiring"]
+  - name: "Google DeepMind"
+    domain: "deepmind.com"
+    keywords: ["DeepMind", "Gemini", "Google AI", "Bard"]
+    categories: ["product", "partnership", "research", "hiring"]
+  - name: "Meta AI"
+    domain: "ai.meta.com"
+    keywords: ["Meta AI", "Llama", "Meta LLM"]
+    categories: ["product", "open-source", "partnership"]

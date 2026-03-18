@@ -1,0 +1,17 @@
+{
+  "venvPath": ".",
+  "venv": "venv",
+  "pythonVersion": "3.10",
+  "pythonPlatform": "Windows",
+  "typeCheckingMode": "off",
+  "reportMissingImports": false,
+  "reportMissingModuleSource": false,
+  "reportUndefinedVariable": false,
+  "reportAttributeAccessIssue": false,
+  "useLibraryCodeForTypes": true,
+  "exclude": [
+    "venv/**",
+    "frontend/**",
+    "**/node_modules/**"
+  ]
+}

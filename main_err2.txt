@@ -1,0 +1,47 @@
+﻿[03/16/26 22:25:30] INFO     [RunTracker] Started run: run_20260316_165530     
+                    INFO     ==================================================
+                             ==========                                        
+                    INFO       COMPETITIVE INTELLIGENCE SYSTEM ù STARTING RUN  
+                    INFO       Run ID: run_20260316_165530                     
+                    INFO       Mode: TEST                                      
+                    INFO     ==================================================
+                             ==========                                        
+                    INFO     Loaded 3 competitors from config                  
+                    INFO     [RunTracker] Stage 'config_validation': success   
+                    INFO     [TEST MODE] Skipping live ingestion               
+                    INFO     [RunTracker] Stage 'ingestion': skipped           
+[03/16/26 22:25:31] ERROR    Pipeline failed: No module named 'pkg_resources'  
+                             +------ Traceback (most recent call last) -------+
+                             | C:\Users\SUBBU\Downloads\Multi-Agent           |
+                             | Competitive Intelligence System\main.py:66 in  |
+                             | run_full_pipeline                              |
+                             |                                                |
+                             |    63             tracker.log_stage("ingestion |
+                             |    64                                          |
+                             |    65         [03/16/26 22:25:31] ERROR    Pipeline failed: No module named 'pkg_resources'  
+                             +------ Traceback (most recent call last) -------+
+                             | C:\Users\SUBBU\Downloads\Multi-Agent           |
+                             | Competitive Intelligence System\main.py:66 in  |
+                             | run_full_pipeline                              |
+                             |                                                |
+                             |    63             tracker.log_stage("ingestion |
+                             |    64                                          |
+                             |    65         [03/16/26 22:25:31] ERROR    Pipeline failed: No module named 'pkg_resources'  
+                             +------ Traceback (most recent call last) -------+
+                             | C:\Users\SUBBU\Downloads\Multi-Agent           |
+                             | Competitive Intelligence System\main.py:66 in  |
+                             | run_full_pipeline                              |
+                             |                                                |
+                             |    63             tracker.log_stage("ingestion |
+                             |    64                                          |
+                             |    65         
+Run Summary: run_20260316_165530
+Status: failed
+Started:   2026-03-16T16:55:30.233969
+Completed: 2026-03-16T16:55:31.940672
+
+Errors (1):
+   No module named 'pkg_resources'
+
+
+Run failed: No module named 'pkg_resources'
