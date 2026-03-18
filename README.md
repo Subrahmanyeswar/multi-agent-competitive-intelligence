@@ -287,7 +287,12 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
-## Author
+## 👨‍💻 Author
+
+**Subrahmanyeswar Kolluru**
+
+- **HuggingFace:** [huggingface.co/Subrahmanyeswar](https://huggingface.co/Subrahmanyeswar)
+- **LinkedIn:** [linkedin.com/in/subrahmanyeswar-kolluru-914694293](https://www.linkedin.com/in/subrahmanyeswar-kolluru-914694293)
 
 Built with CrewAI, LangChain, Mistral AI, Qdrant, React, and D3.js.
 
