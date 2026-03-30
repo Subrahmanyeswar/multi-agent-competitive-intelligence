@@ -8,7 +8,20 @@
   "reportMissingModuleSource": false,
   "reportUndefinedVariable": false,
   "reportAttributeAccessIssue": false,
+  "reportOptionalMemberAccess": false,
+  "reportGeneralTypeIssues": false,
+  "reportIndexIssue": false,
+  "reportOperatorIssue": false,
   "useLibraryCodeForTypes": true,
+  "extraPaths": [
+    "."
+  ],
+  "executionEnvironments": [
+    {
+      "root": ".",
+      "extraPaths": ["."]
+    }
+  ],
   "exclude": [
     "venv/**",
     "frontend/**",

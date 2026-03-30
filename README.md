@@ -1,155 +1,162 @@
-# Multi-Agent Competitive Intelligence System
+# 🏢 Multi-Agent Competitive Intelligence System
 
-> An autonomous AI-powered competitive intelligence platform that continuously monitors competitor activity, performs strategic analysis, and generates professional weekly reports — all triggered from a clean dashboard.
+> **Transforming raw web data into strategic insights.** An autonomous AI-powered platform that continuously monitors competitor activity, performs deep strategic analysis, and generates professional executive reports — all controlled from a stunning real-time dashboard.
 
-![Python](https://img.shields.io/badge/Python-3.10-blue?style=flat-square&logo=python)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.115-green?style=flat-square&logo=fastapi)
-![React](https://img.shields.io/badge/React-18-blue?style=flat-square&logo=react)
-![Mistral AI](https://img.shields.io/badge/LLM-Mistral%20AI-orange?style=flat-square)
-![Qdrant](https://img.shields.io/badge/Vector%20DB-Qdrant-red?style=flat-square)
-![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
-
----
-
-## What It Does
-
-This system deploys a crew of specialized AI agents that work together to produce a competitive intelligence report on demand. Click one button — the agents scrape the web, analyze the data, and deliver a structured PDF report with SWOT analysis, weak signal detection, and strategic recommendations.
-
-**Tracked competitors (configurable):** OpenAI · Google DeepMind · Meta AI
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
+  <img src="https://img.shields.io/badge/FastAPI-005863?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" />
+  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
+  <img src="https://img.shields.io/badge/Mistral_AI-FF6000?style=for-the-badge" alt="Mistral AI" />
+  <img src="https://img.shields.io/badge/Qdrant-DB2128?style=for-the-badge&logo=qdrant&logoColor=white" alt="Qdrant" />
+</p>
 
 ---
 
-## Live Demo — Dashboard Pages
+## 🚀 Overview
 
-| Page | Description |
-|---|---|
-| **Dashboard** | Live stats — articles collected, signals detected, vectors stored, run history |
-| **Live Pipeline** | Animated 6-stage pipeline visualizer with real-time log terminal |
-| **Agent Activity** | All 5 agents with roles, tools, status, and last activity timestamps |
-| **Intelligence** | Per-company SWOT analysis, sentiment momentum, signal velocity chart |
-| **Signal Graph** | D3 force-directed network graph of companies, topics, and signal relationships |
-| **Reports** | PDF download, inline report preview, SWOT summary, key developments |
-| **Data Store** | All collected articles, vector DB stats, search and filter |
+This system deploys a high-performance **Crew of specialized AI agents** that work in concert to deliver boardroom-ready competitive intelligence. With a single click, the agents swarm the web, synthesize massive datasets, and produce structured PDF reports featuring SWOT analyses, weak signal detection, and actionable strategic recommendations.
+
+**🎯 Focused Tracking:** `OpenAI` • `Google DeepMind` • `Meta AI` • `Anthropic`
+
+---
+
+## 📱 Dashboard Overview
+
+| Feature | Description |
+|:---|:---|
+| **📊 Dashboard** | Live stats — articles collected, signals detected, vectors stored, run history |
+| **⚡ Live Pipeline** | Animated 6-stage pipeline visualizer with real-time log terminal |
+| **🤖 Agent Activity** | All 5 agents with roles, tools, status, and last activity timestamps |
+| **🔍 Intelligence** | Per-company SWOT analysis, sentiment momentum, signal velocity chart |
+| **🌐 Signal Graph** | D3 force-directed network graph of companies, topics, and signal relationships |
+| **📄 Reports** | PDF download, inline report preview, SWOT summary, key developments |
+| **💾 Data Store** | All collected articles, vector DB stats, search and filter |
 
 ---
 
 ## System Architecture
-┌─────────────────────────────────────────────────────────────┐
-│                    React Dashboard (Port 8000)               │
-│         Dashboard · Pipeline · Intelligence · Reports        │
-└────────────────────────┬────────────────────────────────────┘
-│ HTTP / REST API
-┌────────────────────────▼────────────────────────────────────┐
-│                   FastAPI Server (api_server.py)             │
-│         /api/run · /api/status · /api/signals · /api/report  │
-└──────┬──────────────────┬──────────────────┬───────────────-┘
-│                  │                  │
-┌──────▼──────┐  ┌────────▼────────┐  ┌──────▼──────────────┐
-│  Manager    │  │  Research Agent  │  │   Analysis Agent    │
-│  Agent      │  │  (per competitor)│  │   RAG + SWOT +      │
-│ Orchestrator│  │  Serper + Firecr │  │   Signal Scoring    │
-└─────────────┘  └────────┬────────┘  └──────┬──────────────┘
-│                  │
-┌────────▼────────┐  ┌──────▼──────────────┐
-│  Ingestion      │  │  Synthesizer Agent  │
-│  Pipeline       │  │  Final Report       │
-│  Chunk+Embed    │  │  Generation         │
-└────────┬────────┘  └──────┬──────────────┘
-│                  │
-┌────────▼────────┐  ┌──────▼──────────────┐
-│  Qdrant Vector  │  │  PDF Report         │
-│  Database       │  │  (ReportLab)        │
-│  (Cloud)        │  │                     │
-└─────────────────┘  └─────────────────────┘
+
+```mermaid
+graph TD
+    subgraph UI ["Frontend Interface"]
+        Dash["React Dashboard"]
+        Flow["Live Pipeline Visualizer"]
+    end
+
+    subgraph API ["Backend Gateway"]
+        Fast["FastAPI Server"]
+        Routes["REST Endpoints<br/>(/api/run, /api/status, ...)"]
+    end
+
+    subgraph Core ["Multi-Agent Intelligence Crew"]
+        Manager["Manager Agent<br/>(Orchestrator)"]
+        Research["Research Agent<br/>(News Scraping)"]
+        Analysis["Analysis Agent<br/>(SWOT + Signal Scoring)"]
+        Synth["Synthesizer Agent<br/>(Report Writing)"]
+    end
+
+    subgraph Data ["Data & Storage Layer"]
+        Ingest["Ingestion Pipeline"]
+        Store[("Qdrant Vector DB")]
+        Artifacts["PDF Reports"]
+    end
+
+    Dash <--> Fast
+    Fast --> Manager
+    Manager --> Research
+    Manager --> Analysis
+    Research --> Ingest
+    Ingest --> Store
+    Analysis --> Store
+    Analysis --> Synth
+    Synth --> Artifacts
+    Artifacts --> Dash
+
+    %% Styling
+    classDef default font-family:Inter,sans-serif,font-size:14px;
+    classDef highlight fill:#4f46e5,color:#fff,stroke:#3730a3;
+    classDef agent fill:#f8fafc,stroke:#e2e8f0;
+    classDef storage fill:#ecfdf5,stroke:#10b981;
+    
+    class Dash,Fast highlight;
+    class Manager,Research,Analysis,Synth agent;
+    class Store,Artifacts storage;
+```
 
 ---
 
-## Agent Roles
+## 👥 Agent Roles
 
-| Agent | Role | Tools |
-|---|---|---|
-| **Manager Agent** | Chief Intelligence Officer — orchestrates the crew | CrewAI hierarchical process, task delegation |
-| **Research Agent** | Market Intelligence Collector — one per competitor | Serper API, Firecrawl, rate-limited retries |
-| **Analysis Agent** | Strategy Analyst — SWOT + signal scoring | RAG (Qdrant), Mistral AI, SWOT framework |
-| **Synthesizer Agent** | Executive Report Writer — unified report | Multi-company synthesis, recommendation engine |
-| **Quality Guard** | Validation — error recovery + fallback | Pydantic validation, retry logic (3 attempts) |
-
----
-
-## Tech Stack
-
-### Backend
-- **Python 3.10** — core language
-- **CrewAI** — multi-agent orchestration framework
-- **LangChain + Mistral AI** — LLM reasoning and RAG pipelines
-- **Qdrant Cloud** — vector database for semantic search
-- **FastAPI + Uvicorn** — REST API server
-- **Sentence Transformers** — local embeddings (all-MiniLM-L6-v2)
-- **ReportLab** — PDF report generation
-- **Serper API** — Google News search
-- **Firecrawl** — web scraping
-
-### Frontend
-- **React 18 + Vite** — fast modern frontend
-- **TailwindCSS** — utility-first styling
-- **Chart.js + react-chartjs-2** — signal velocity charts
-- **D3.js** — force-directed signal graph
-- **Lucide React** — icons
-- **date-fns** — date formatting
+| Agent | Responsibility | Key Capabilities |
+|:---|:---|:---|
+| **Manager Agent** | Chief Intelligence Officer | CrewAI orchestration, task delegation, hierarchical oversight |
+| **Research Agent** | Intelligence Collector | Deep web scraping, Serper.dev integration, multi-competitor tracking |
+| **Analysis Agent** | Strategy Analyst | SWOT framework, semantic RAG retrieval, weak signal scoring |
+| **Synthesizer Agent** | Executive Writer | Multi-perspective synthesis, PDF compilation, strategic 30-day outlook |
+| **Quality Guard** | Validation Engine | Pydantic data validation, automated error recovery, fallback logic |
 
 ---
 
-## Project Structure
-Multi-Agent Competitive Intelligence System/
-├── agents/
-│   ├── analysis_agent.py      # RAG + SWOT + signal analysis
-│   ├── manager_agent.py       # CrewAI orchestrator
-│   ├── research_agent.py      # News scraping per competitor
-│   └── synthesizer_agent.py   # Final report generation
-├── config/
-│   ├── competitors.yaml       # Define which companies to track
-│   └── settings.py            # Central config loader
-├── crew/
-│   └── intelligence_crew.py   # CrewAI crew assembly
-├── frontend/
-│   ├── src/
-│   │   ├── pages/             # Dashboard, Pipeline, Intelligence...
-│   │   ├── components/        # Sidebar, TopBar, ConnectionStatus
-│   │   └── services/api.js    # All API calls
-│   └── dist/                  # Built frontend (served by FastAPI)
-├── monitoring/
-│   ├── logger.py              # Rich console + JSON file logging
-│   └── run_tracker.py         # Per-run stats and history
-├── pipelines/
-│   ├── chunker.py             # Semantic text chunking
-│   ├── ingestion_pipeline.py  # Full scrape→embed→upsert pipeline
-│   └── signal_detector.py     # Weak signal detection + scoring
-├── reports/
-│   └── pdf_renderer.py        # ReportLab PDF generation
-├── storage/
-│   ├── database.py            # Local JSON article store
-│   └── vector_store.py        # Qdrant client wrapper
-├── tasks/
-│   ├── analysis_task.py       # CrewAI task definitions
-│   ├── research_task.py
-│   └── synthesis_task.py
-├── tools/
-│   ├── rag_tool.py            # RAG retrieval from Qdrant
-│   ├── scraper_tool.py        # Firecrawl scraping
-│   ├── search_tool.py         # Serper news search
-│   └── signal_scorer.py       # Velocity + sentiment scoring
-├── api_server.py              # FastAPI server + pipeline trigger
-├── main.py                    # Entry point
-├── start.bat                  # One-click startup script
-├── requirements.txt           # Python dependencies
-├── .env.example               # Environment variable template
-└── README.md                  # This file
+## 🛠️ Tech Stack
+
+#### 🖥️ Backend
+- **Python 3.10+** — Core engine
+- **CrewAI** — Multi-agent orchestration
+- **LangChain + Mistral AI** — LLM reasoning & RAG
+- **Qdrant Cloud** — High-performance vector database
+- **FastAPI + Uvicorn** — Ultra-fast REST API
+- **Sentence Transformers** — Local semantic embeddings
+- **ReportLab** — Automated PDF generation
+
+#### 🎨 Frontend
+- **React 18 + Vite** — Modern UI framework
+- **TailwindCSS** — Premium styling system
+- **Chart.js + D3.js** — Interactive data visualizations
+- **Lucide React** — Elegant iconography
 
 ---
 
-## Quick Start
+## 📂 Project Structure
 
-### Prerequisites
+```bash
+.
+├── 🤖 agents/            # Specialized AI core logic
+│   ├── analysis_agent.py   # RAG-based strategic analysis (SWOT)
+│   ├── manager_agent.py    # CrewAI hierarchical orchestrator
+│   ├── research_agent.py   # Multi-source intelligence gathering
+│   └── synthesizer_agent.py# Executive summary & PDF compiler
+├── ⚙️ config/            # System & Competitor configuration
+│   ├── competitors.yaml    # Target companies & focus keywords
+│   └── settings.py         # Global environment & API loader
+├── 🚢 crew/              # CrewAI assembly
+│   └── intelligence_crew.py# Agent/Task wiring and process flow
+├── 💻 frontend/          # React + Vite Dashboard
+│   ├── src/                # UI source code
+│   └── dist/               # Production build (served by backend)
+├── 📈 monitoring/        # Observability & Tracking
+│   ├── logger.py           # Rich logging system
+│   └── run_tracker.py      # Execution metrics & history
+├── 🔄 pipelines/         # Data processing layers
+│   ├── chunker.py          # Semantic text segmentation
+│   ├── ingestion_pipeline.py# Scrape → Embed → Upsert flow
+│   └── signal_detector.py  # Weak signal scoring & extraction
+├── 📝 reports/           # Document generation
+│   └── pdf_renderer.py     # Professional PDF layout system
+├── 📦 storage/           # Database & Vector stores
+│   ├── database.py         # Local JSON meta-store
+│   └── vector_store.py     # Qdrant vector client
+├── 🛠️ tools/             # Shared agent capabilities
+│   ├── rag_tool.py         # Semantic retrieval engine
+│   ├── scraper_tool.py     # Firecrawl web extraction
+│   └── search_tool.py      # Serper.dev Google Intelligence
+└── api_server.py           # FastAPI Application Entry
+```
+
+---
+
+## ⚡ Quick Start
+
+### 📋 Prerequisites
 - Python 3.10+
 - Node.js 18+
 - Git
@@ -281,7 +288,7 @@ Full API docs available at **http://localhost:8000/docs**
 
 ---
 
-## License
+## ⚖️ License
 
 MIT License — see [LICENSE](LICENSE) for details.
 
@@ -291,9 +298,9 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 **Subrahmanyeswar Kolluru**
 
-- **HuggingFace:** [huggingface.co/Subrahmanyeswar](https://huggingface.co/Subrahmanyeswar)
-- **LinkedIn:** [linkedin.com/in/subrahmanyeswar-kolluru-914694293](https://www.linkedin.com/in/subrahmanyeswar-kolluru-914694293)
+- **HuggingFace:** [@Subrahmanyeswar](https://huggingface.co/Subrahmanyeswar)
+- **LinkedIn:** [Subrahmanyeswar Kolluru](https://www.linkedin.com/in/subrahmanyeswar-kolluru-914694293)
 
-Built with CrewAI, LangChain, Mistral AI, Qdrant, React, and D3.js.
+*Built with passion and cutting-edge AI orchestration.*
 
 ---

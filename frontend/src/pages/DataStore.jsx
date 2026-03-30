@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { getArticles, getVectorStats, getCompetitors } from '../services/api';
-import { Database, ExternalLink, Search } from 'lucide-react';
+import { Database, ExternalLink, Search, RefreshCw } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
+import axios from 'axios';
 
 export default function DataStore({ refreshKey }) {
   const [articles, setArticles] = useState([]);
@@ -10,20 +11,41 @@ export default function DataStore({ refreshKey }) {
   const [filter, setFilter] = useState('');
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const [backfilling, setBackfilling] = useState(false);
+  const [backfillMsg, setBackfillMsg] = useState('');
+
+  const fetchAll = async () => {
+    setLoading(true);
+    try {
+      const [aRes, vRes, cRes] = await Promise.all([getArticles(), getVectorStats(), getCompetitors()]);
+      setArticles(aRes.data.articles || []);
+      setVectorStats(vRes.data || {});
+      setCompetitors(cRes.data.competitors || []);
+    } catch(e) {}
+    setLoading(false);
+  };
 
   useEffect(() => {
-    const fetch = async () => {
-      setLoading(true);
-      try {
-        const [aRes, vRes, cRes] = await Promise.all([getArticles(), getVectorStats(), getCompetitors()]);
-        setArticles(aRes.data.articles || []);
-        setVectorStats(vRes.data || {});
-        setCompetitors(cRes.data.competitors || []);
-      } catch(e) {}
-      setLoading(false);
-    };
-    fetch();
+    fetchAll();
   }, [refreshKey]);
+
+  const handleBackfill = async () => {
+    setBackfilling(true);
+    setBackfillMsg('Embedding articles into vector DB...');
+    try {
+      const res = await axios.post('/api/backfill-vectors');
+      if (res.data.status === 'success') {
+        setBackfillMsg(`✓ Done — ${res.data.chunks_upserted} chunks upserted`);
+      } else {
+        setBackfillMsg(`⚠ ${res.data.message}`);
+      }
+      setTimeout(() => fetchAll(), 2000);
+    } catch(e) {
+      setBackfillMsg('✗ Backfill failed — check backend logs');
+    } finally {
+      setTimeout(() => { setBackfilling(false); setBackfillMsg(''); }, 8000);
+    }
+  };
 
   const filtered = articles.filter(a => {
     const matchCompany = !filter || a.company === filter;
@@ -41,18 +63,38 @@ export default function DataStore({ refreshKey }) {
   return (
     <div style={{ maxWidth: 1100 }}>
       {/* Vector DB stats */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 16 }}>
         {stats.map(({ label, value }) => (
           <div key={label} style={{ background: 'var(--navy-2)', border: '1px solid var(--border-subtle)', borderRadius: 8, padding: '14px 16px' }}>
             <div style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>{label}</div>
             <div style={{ fontSize: 20, fontWeight: 600, fontFamily: 'var(--font-mono)', color: 'var(--text-primary)' }}>{typeof value === 'number' ? value.toLocaleString() : value}</div>
             {label === 'Vectors Stored' && vectorStats.vectors_count === 0 && (
               <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 4 }}>
-                Updates after pipeline run
+                Click sync button below
               </div>
             )}
           </div>
         ))}
+      </div>
+
+      {/* Backfill sync button */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+        <button onClick={handleBackfill} disabled={backfilling} style={{
+          display: 'flex', alignItems: 'center', gap: 6,
+          padding: '8px 16px',
+          background: backfilling ? 'var(--slate)' : 'linear-gradient(135deg, #0d9488, #14b8a6)',
+          border: 'none', borderRadius: 6,
+          color: '#fff', fontSize: 13, fontWeight: 500,
+          cursor: backfilling ? 'not-allowed' : 'pointer',
+          transition: 'all 0.2s ease',
+          boxShadow: backfilling ? 'none' : '0 2px 8px rgba(13,148,136,0.3)',
+        }}>
+          <RefreshCw size={13} style={{ animation: backfilling ? 'spin 1s linear infinite' : 'none' }} />
+          {backfilling ? 'Embedding...' : 'Sync Articles to Vector DB'}
+        </button>
+        {backfillMsg && (
+          <span style={{ fontSize: 12, color: backfillMsg.startsWith('✓') ? '#2dd4bf' : backfillMsg.startsWith('✗') ? '#f87171' : 'var(--teal)' }}>{backfillMsg}</span>
+        )}
       </div>
 
       <div style={{
@@ -138,6 +180,14 @@ export default function DataStore({ refreshKey }) {
           )}
         </div>
       </div>
+
+      {/* Spin animation for backfill button */}
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 }

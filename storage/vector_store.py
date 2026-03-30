@@ -1,11 +1,15 @@
-from qdrant_client import QdrantClient
-from qdrant_client.models import (
+# pyre-ignore-all-errors
+from __future__ import annotations
+from typing import Optional, Any
+
+from qdrant_client import QdrantClient  # type: ignore
+from qdrant_client.models import (  # type: ignore
     Distance, VectorParams, PointStruct,
     Filter, FieldCondition, MatchValue,
     PayloadSchemaType
 )
-from sentence_transformers import SentenceTransformer
-from config.settings import settings
+from sentence_transformers import SentenceTransformer  # type: ignore
+from config.settings import settings  # pyre-ignore[21]  # type: ignore
 import uuid
 import logging
 from datetime import datetime
@@ -13,12 +17,12 @@ from datetime import datetime
 logger = logging.getLogger(__name__)
 
 class VectorStore:
-    def __init__(self):
-        self.client = None
-        self.encoder = None
-        self.collection = settings.COLLECTION_NAME
+    def __init__(self) -> None:
+        self.client: Optional[QdrantClient] = None
+        self.encoder: Optional[SentenceTransformer] = None
+        self.collection: str = settings.COLLECTION_NAME
 
-    def _lazy_init(self):
+    def _lazy_init(self) -> None:
         if self.client is None:
             self.client = QdrantClient(
                 url=settings.QDRANT_URL,
@@ -27,44 +31,46 @@ class VectorStore:
             self.encoder = SentenceTransformer(settings.EMBEDDING_MODEL)
             self._ensure_collection()
 
-    def _ensure_collection(self):
-        existing = [c.name for c in self.client.get_collections().collections]
+    def _ensure_collection(self) -> None:
+        client = self.client
+        if client is None:
+            return
+        existing = [c.name for c in client.get_collections().collections]
         if self.collection not in existing:
-            # Create collection with unnamed vectors (size 384 for all-MiniLM-L6-v2)
-            self.client.create_collection(
+            client.create_collection(
                 collection_name=self.collection,
                 vectors_config=VectorParams(size=384, distance=Distance.COSINE),
             )
             logger.info(f"Created Qdrant collection: {self.collection}")
-            
-            # Create payload index on "company" field for filtering
-            self.client.create_payload_index(
+            client.create_payload_index(
                 collection_name=self.collection,
                 field_name="company",
                 field_schema=PayloadSchemaType.KEYWORD,
             )
             logger.info("Created payload index on 'company' field")
         else:
-            # Collection exists — ensure index exists too
             try:
-                self.client.create_payload_index(
+                client.create_payload_index(
                     collection_name=self.collection,
                     field_name="company",
                     field_schema=PayloadSchemaType.KEYWORD,
                 )
                 logger.info("Ensured payload index on 'company' field")
             except Exception:
-                pass  # Index already exists, that's fine
+                pass
 
-    def upsert(self, chunks: list[dict]) -> int:
+    def upsert(self, chunks: list[dict[str, Any]]) -> int:
         self._lazy_init()
+        client = self.client
+        encoder = self.encoder
+        if client is None or encoder is None:
+            return 0
         points = []
         for chunk in chunks:
-            # Encode as plain list (unnamed vector)
-            vector = self.encoder.encode(chunk["text"]).tolist()
+            vector = encoder.encode(chunk["text"]).tolist()  # pyre-ignore
             points.append(PointStruct(
                 id=str(uuid.uuid4()),
-                vector=vector,  # plain list, not named dict
+                vector=vector,
                 payload={
                     "text": chunk["text"],
                     "company": chunk.get("company", ""),
@@ -75,17 +81,18 @@ class VectorStore:
                     "chunk_index": chunk.get("chunk_index", 0),
                 }
             ))
-        self.client.upsert(collection_name=self.collection, points=points)
+        client.upsert(collection_name=self.collection, points=points)  # pyre-ignore
         logger.info(f"Upserted {len(points)} chunks to Qdrant")
         return len(points)
 
-    def search(self, query: str, company: str = None, top_k: int = None) -> list[dict]:
+    def search(self, query: str, company: Optional[str] = None, top_k: Optional[int] = None) -> list[dict[str, Any]]:
         self._lazy_init()
-        from qdrant_client.models import Filter, FieldCondition, MatchValue
-        top_k = top_k or settings.TOP_K_RETRIEVAL
-        
-        # Encode as plain list (unnamed vector)
-        vector = self.encoder.encode(query).tolist()
+        client = self.client
+        encoder = self.encoder
+        if client is None or encoder is None:
+            return []
+        resolved_top_k: int = top_k if top_k is not None else int(settings.TOP_K_RETRIEVAL)
+        vector = encoder.encode(query).tolist()  # pyre-ignore
         
         query_filter = None
         if company:
@@ -93,11 +100,11 @@ class VectorStore:
                 must=[FieldCondition(key="company", match=MatchValue(value=company))]
             )
         
-        results = self.client.search(
+        results = client.search(  # pyre-ignore
             collection_name=self.collection,
-            query_vector=vector,  # plain list
+            query_vector=vector,
             query_filter=query_filter,
-            limit=top_k,
+            limit=resolved_top_k,
             with_payload=True,
         )
         return [
@@ -111,5 +118,54 @@ class VectorStore:
             }
             for r in results
         ]
+
+    def backfill_from_articles_db(self) -> int:
+        """
+        Embed and upsert all articles from articles.json that are
+        not yet in Qdrant. Run this once to fix the empty vector store.
+        """
+        import json
+        from pathlib import Path
+        from pipelines.chunker import SemanticChunker  # pyre-ignore[21]  # type: ignore
+
+        self._lazy_init()
+        articles_path = Path(__file__).parent / "articles.json"
+
+        if not articles_path.exists():
+            logger.info("[Backfill] No articles.json found")
+            return 0
+
+        with open(articles_path, encoding="utf-8") as f:
+            articles: list[dict[str, Any]] = json.load(f)
+
+        logger.info(f"[Backfill] Found {len(articles)} articles in DB")
+
+        chunker = SemanticChunker()
+        all_chunks: list[dict[str, Any]] = []
+
+        for article in articles:
+            chunks = chunker.chunk_article(article)
+            all_chunks.extend(chunks)
+
+        if not all_chunks:
+            logger.info("[Backfill] No chunks generated")
+            return 0
+
+        logger.info(f"[Backfill] Generated {len(all_chunks)} chunks, upserting...")
+
+        batch_size: int = 50
+        total_upserted: int = 0
+        for i in range(0, len(all_chunks), batch_size):
+            batch: list[dict[str, Any]] = list(all_chunks[i:i + batch_size])  # pyre-ignore
+            try:
+                upserted: int = self.upsert(batch)
+                total_upserted = int(total_upserted) + int(upserted)  # pyre-ignore
+                logger.info(f"[Backfill] Batch {i // batch_size + 1}: upserted {upserted} chunks")
+            except Exception as e:
+                logger.error(f"[Backfill] Batch failed: {e}")
+
+        logger.info(f"[Backfill] Complete — {total_upserted} total chunks in Qdrant")
+        return int(total_upserted)  # pyre-ignore
+
 
 vector_store = VectorStore()

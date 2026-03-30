@@ -11,10 +11,10 @@ import time
 from pathlib import Path
 from datetime import datetime
 from typing import Any, cast, List, Dict
-from fastapi import FastAPI, BackgroundTasks
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
-from fastapi.staticfiles import StaticFiles
+from fastapi import FastAPI, BackgroundTasks  # type: ignore
+from fastapi.middleware.cors import CORSMiddleware  # type: ignore
+from fastapi.responses import FileResponse, JSONResponse  # type: ignore
+from fastapi.staticfiles import StaticFiles  # type: ignore
 
 app = FastAPI(title="Competitive Intelligence API", version="1.0.0")
 
@@ -58,7 +58,7 @@ def get_runs():
 
 @app.get("/api/competitors")
 def get_competitors():
-    from config.settings import settings
+    from config.settings import settings  # pyre-ignore[21]  # type: ignore
     competitors = settings.load_competitors()
     articles = load_json(ARTICLES_DB, [])
     result = []
@@ -85,8 +85,8 @@ def get_articles(company: str = "", limit: int = 50):
 
 @app.get("/api/signals")
 def get_signals():
-    from config.settings import settings
-    from pipelines.signal_detector import SignalDetector
+    from config.settings import settings  # pyre-ignore[21]  # type: ignore
+    from pipelines.signal_detector import SignalDetector  # pyre-ignore[21]  # type: ignore
     competitors = settings.load_competitors()
     names = [c["name"] for c in competitors]
     try:
@@ -127,8 +127,8 @@ def download_report():
 @app.get("/api/vector-stats")
 def get_vector_stats():
     try:
-        from qdrant_client import QdrantClient
-        from config.settings import settings
+        from qdrant_client import QdrantClient  # pyre-ignore[21]  # type: ignore
+        from config.settings import settings  # pyre-ignore[21]  # type: ignore
         client = QdrantClient(
             url=settings.QDRANT_URL,
             api_key=settings.QDRANT_API_KEY,
@@ -149,12 +149,27 @@ def get_vector_stats():
             "status": "unavailable",
         }
 
+@app.post("/api/backfill-vectors")
+def backfill_vectors():
+    """Re-embed all articles from articles.json into Qdrant."""
+    try:
+        from storage.vector_store import vector_store  # pyre-ignore[21]  # type: ignore
+        count = vector_store.backfill_from_articles_db()
+        return {
+            "status": "success",
+            "chunks_upserted": count,
+            "message": f"Successfully upserted {count} chunks to Qdrant",
+        }
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
 def run_pipeline_task():
     global pipeline_status
     try:
         import sys
         sys.path.insert(0, str(BASE_DIR))
-        from config.settings import settings
+        from config.settings import settings  # pyre-ignore[21]  # type: ignore
         
         pipeline_status["stage"] = "config_validation"
         pipeline_status["message"] = "Validating configuration..."
@@ -163,13 +178,13 @@ def run_pipeline_task():
 
         pipeline_status["stage"] = "scraping"
         pipeline_status["message"] = f"Scraping news for {len(competitors)} competitors: {', '.join([c['name'] for c in competitors])}..."
-        from pipelines.ingestion_pipeline import IngestionPipeline
+        from pipelines.ingestion_pipeline import IngestionPipeline  # pyre-ignore[21]  # type: ignore
         ingestion = IngestionPipeline()
         ingestion_stats = ingestion.run_all()
 
         pipeline_status["stage"] = "analysis"
         pipeline_status["message"] = "Running AI analysis (this takes 3-5 mins on free tier)..."
-        from agents.analysis_agent import AnalysisAgent
+        from agents.analysis_agent import AnalysisAgent  # pyre-ignore[21]  # type: ignore
         analyst = AnalysisAgent()
         analyses = analyst.analyze_all(competitors)
         
@@ -180,8 +195,8 @@ def run_pipeline_task():
 
         pipeline_status["stage"] = "synthesis"
         pipeline_status["message"] = "Synthesizing final report..."
-        from agents.synthesizer_agent import SynthesizerAgent
-        from pipelines.signal_detector import SignalDetector
+        from agents.synthesizer_agent import SynthesizerAgent  # pyre-ignore[21]  # type: ignore
+        from pipelines.signal_detector import SignalDetector  # pyre-ignore[21]  # type: ignore
         synthesizer = SynthesizerAgent()
         report_data = synthesizer.synthesize(analyses)
         
@@ -199,11 +214,11 @@ def run_pipeline_task():
 
         pipeline_status["stage"] = "rendering"
         pipeline_status["message"] = "Generating PDF report..."
-        from reports.pdf_renderer import PDFRenderer
+        from reports.pdf_renderer import PDFRenderer  # pyre-ignore[21]  # type: ignore
         renderer = PDFRenderer()
         renderer.render(report_data, analyses=analyses)
 
-        from monitoring.run_tracker import RunTracker
+        from monitoring.run_tracker import RunTracker  # pyre-ignore[21]  # type: ignore
         tracker = RunTracker()
         tracker.start_run("manual_trigger")
         tracker.log_stage("ingestion", "success", ingestion_stats.get("totals", {}))
@@ -254,7 +269,7 @@ if FRONTEND_BUILD.exists():
         return JSONResponse({"error": "Frontend not built"}, status_code=404)
 
 if __name__ == "__main__":
-    import uvicorn
+    import uvicorn  # pyre-ignore[21]  # type: ignore
     
     def open_browser():
         time.sleep(1.5)

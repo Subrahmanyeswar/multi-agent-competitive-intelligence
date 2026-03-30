@@ -1,9 +1,9 @@
 import logging
 from datetime import datetime
-from agents.research_agent import ResearchAgentBuilder
-from pipelines.chunker import SemanticChunker
-from storage.vector_store import vector_store
-from config.settings import settings
+from agents.research_agent import ResearchAgentBuilder  # pyre-ignore[21]  # type: ignore
+from pipelines.chunker import SemanticChunker  # pyre-ignore[21]  # type: ignore
+from storage.vector_store import vector_store  # pyre-ignore[21]  # type: ignore
+from config.settings import settings  # pyre-ignore[21]  # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -55,10 +55,14 @@ class IngestionPipeline:
             logger.info(f"[Pipeline] {company_name}: {len(all_chunks)} chunks ready")
             
             # Step 3: Upsert to Qdrant
+            logger.info(f"[Pipeline] {company_name}: {len(all_chunks)} chunks to upsert")
             if all_chunks:
                 upserted = vector_store.upsert(all_chunks)
                 company_stats["chunks"] = upserted
                 self.stats["chunks_upserted"] += upserted
+                logger.info(f"[Pipeline] {company_name}: upserted {upserted} chunks to Qdrant")
+            else:
+                logger.warning(f"[Pipeline] {company_name}: 0 chunks — articles may already be in DB but not Qdrant")
             
             self.stats["articles_collected"] += len(articles)
             self.stats["companies_processed"] += 1
