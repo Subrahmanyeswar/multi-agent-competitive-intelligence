@@ -8,13 +8,13 @@ from config.settings import settings
 
 logger = logging.getLogger(__name__)
 
-SWOT_SYSTEM_PROMPT = """You are a senior competitive intelligence analyst with an MBA from a top business school.
-Your job is to analyze news data about a competitor and produce a structured SWOT analysis plus strategic insights.
+SWOT_SYSTEM_PROMPT = """You are a senior competitive intelligence analyst with an MBA from a top business school, specializing in the FMCG beverage industry.
+Your job is to analyze news data about a mango juice competitor brand and produce a structured SWOT analysis plus strategic insights.
 
 Rules:
 - Base every claim on the provided source data. Never fabricate.
 - Be specific and quantitative where possible.
-- Use business intelligence language.
+- Use business intelligence language relevant to the beverage/FMCG industry.
 - Format output as valid JSON only.
 """
 
@@ -126,7 +126,7 @@ Strategy: {strategy_ctx or 'See articles above'}
 TOP SIGNALS: {[{"title": a.get("title",""), "score": a.get("signal_score",0)} for a in top_signals]}
 
 Based on the news data above, produce a JSON analysis of {company_name}.
-You MUST populate every field based on what you know about {company_name} as a major AI company,
+You MUST populate every field based on what you know about {company_name} as a major mango juice brand in India,
 combined with the news articles provided. Do NOT return empty arrays.
 
 Return ONLY this JSON, no other text:
@@ -210,7 +210,7 @@ Return ONLY this JSON with real, specific information about {company_name}:
   "key_developments": [],
   "strategic_themes": ["Theme 1", "Theme 2", "Theme 3"],
   "signal_velocity": {velocity},
-  "outlook": "30-day outlook for {company_name} based on current AI market trends."
+  "outlook": "30-day outlook for {company_name} based on current Indian mango juice/beverage market trends."
 }}"""
             response = self.llm.invoke([
                 SystemMessage(content="Respond with valid JSON only. Use your knowledge of this company."),
@@ -230,13 +230,13 @@ Return ONLY this JSON with real, specific information about {company_name}:
                 "company": company_name,
                 "analysis_date": datetime.utcnow().isoformat(),
                 "swot": {
-                    "strengths": [f"{company_name} is a leading AI company with significant resources"],
+                    "strengths": [f"{company_name} is a leading mango juice brand in India with strong market presence"],
                     "weaknesses": ["Rate limiting prevented full analysis this run"],
-                    "opportunities": ["Growing enterprise AI market presents expansion opportunities"],
-                    "threats": ["Intense competition from well-funded AI startups"]
+                    "opportunities": ["Growing Indian beverage market and rising mango juice consumption presents expansion opportunities"],
+                    "threats": ["Intense competition from other mango juice brands and new entrants in the beverage market"]
                 },
                 "key_developments": [],
-                "strategic_themes": ["AI Innovation", "Market Expansion", "Enterprise Growth"],
+                "strategic_themes": ["Product Innovation", "Market Expansion", "Distribution Growth"],
                 "signal_velocity": velocity,
                 "outlook": f"Full analysis will be available on the next pipeline run. {company_name} remains a key competitor to monitor.",
                 "error": False,

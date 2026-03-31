@@ -16,7 +16,7 @@
 
 This system deploys a high-performance **Crew of specialized AI agents** that work in concert to deliver boardroom-ready competitive intelligence. With a single click, the agents swarm the web, synthesize massive datasets, and produce structured PDF reports featuring SWOT analyses, weak signal detection, and actionable strategic recommendations.
 
-**🎯 Focused Tracking:** `OpenAI` • `Google DeepMind` • `Meta AI` • `Anthropic`
+**🎯 Focused Tracking:** `Slice` • `Frooti` • `Maaza`
 
 ---
 
@@ -194,10 +194,10 @@ Open `.env` and fill in your API keys:
 Edit `config/competitors.yaml` to track the companies you want:
 ```yaml
 competitors:
-  - name: "OpenAI"
-    domain: "openai.com"
-    keywords: ["OpenAI", "ChatGPT", "GPT-4o"]
-    categories: ["product", "partnership", "funding"]
+  - name: "Slice"
+    domain: "pepsico.com"
+    keywords: ["Slice juice", "Slice mango", "PepsiCo mango juice"]
+    categories: ["product", "marketing", "supply chain", "campaign"]
 ```
 
 ### 5. Build and run
@@ -240,10 +240,10 @@ Each pipeline run produces:
 Edit `config/competitors.yaml`:
 ```yaml
 competitors:
-  - name: "Anthropic"
-    domain: "anthropic.com"
-    keywords: ["Anthropic", "Claude", "Constitutional AI"]
-    categories: ["product", "research", "funding"]
+  - name: "Tropicana"
+    domain: "tropicana.com"
+    keywords: ["Tropicana", "Tropicana juice"]
+    categories: ["product", "marketing", "campaign"]
 ```
 
 ### Changing the LLM model

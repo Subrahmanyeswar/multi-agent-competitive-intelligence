@@ -89,7 +89,7 @@ class SynthesizerAgent:
             model="mistral-small-latest",
             mistral_api_key=settings.MISTRAL_API_KEY,
             temperature=0.3,
-            max_tokens=1200,
+            max_tokens=2048,
         )
     
     def synthesize(self, analyses: list[dict]) -> dict:
@@ -149,6 +149,15 @@ class SynthesizerAgent:
             
             report_data = json.loads(raw)
             
+            # Ensure outlook_30_days is present
+            if not report_data.get("outlook_30_days") or report_data.get("outlook_30_days") == "Outlook unavailable.":
+                logger.info("[Synthesizer] Outlook missing/empty in LLM response, synthesizing from company data")
+                company_outlooks = [a.get("outlook", "") for a in analyses if a.get("outlook")]
+                if company_outlooks:
+                    report_data["outlook_30_days"] = " ".join(company_outlooks[:3])
+                else:
+                    report_data["outlook_30_days"] = "The competitive landscape remains dynamic. Recent activities suggest continued market shifts across all tracked competitors in the next 30 days."
+
             # Enrich with metadata
             report_data["generated_at"] = datetime.utcnow().isoformat()
             report_data["companies_analyzed"] = [a.get("company") for a in analyses]

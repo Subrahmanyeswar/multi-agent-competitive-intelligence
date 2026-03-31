@@ -9,8 +9,14 @@ DB_PATH = settings.BASE_DIR / "storage" / "articles.json"
 def load_db() -> list[dict]:
     if not DB_PATH.exists():
         return []
-    with open(DB_PATH, "r") as f:
-        return json.load(f)
+    try:
+        with open(DB_PATH, "r", encoding="utf-8-sig") as f:
+            content = f.read().strip()
+            if not content:
+                return []
+            return json.loads(content)
+    except (json.JSONDecodeError, ValueError):
+        return []
 
 def save_article(article: dict) -> None:
     db = load_db()

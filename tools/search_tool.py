@@ -53,8 +53,9 @@ class SerperSearchTool:
         
         for keyword in keywords:
             results = self.search(
-                f'"{keyword}" AI news site:techcrunch.com OR site:reuters.com '
-                f'OR site:bloomberg.com OR site:theverge.com'
+                f'"{keyword}" news site:reuters.com OR site:bloomberg.com '
+                f'OR site:economictimes.indiatimes.com OR site:livemint.com '
+                f'OR site:businesstoday.in OR site:moneycontrol.com'
             )
             for r in results:
                 if r["url"] in seen_urls:

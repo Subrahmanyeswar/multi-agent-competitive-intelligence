@@ -1,13 +1,13 @@
 competitors:
-  - name: "OpenAI"
-    domain: "openai.com"
-    keywords: ["OpenAI", "ChatGPT", "GPT-4o", "Sora"]
-    categories: ["product", "partnership", "funding", "hiring"]
-  - name: "Google DeepMind"
-    domain: "deepmind.com"
-    keywords: ["DeepMind", "Gemini", "Google AI", "Bard"]
-    categories: ["product", "partnership", "research", "hiring"]
-  - name: "Meta AI"
-    domain: "ai.meta.com"
-    keywords: ["Meta AI", "Llama", "Meta LLM"]
-    categories: ["product", "open-source", "partnership"]
+  - name: "Slice"
+    domain: "pepsico.com"
+    keywords: ["Slice mango juice", "Slice PepsiCo", "Slice fruit drink", "Slice beverage India"]
+    categories: ["product", "marketing", "supply chain", "campaign", "pricing", "distribution"]
+  - name: "Frooti"
+    domain: "parleagro.com"
+    keywords: ["Frooti mango", "Parle Agro Frooti", "Frooti juice India", "Frooti beverage"]
+    categories: ["product", "marketing", "supply chain", "campaign", "pricing", "distribution"]
+  - name: "Maaza"
+    domain: "coca-colacompany.com"
+    keywords: ["Maaza mango juice", "Coca-Cola Maaza", "Maaza India", "Maaza beverage"]
+    categories: ["product", "marketing", "supply chain", "campaign", "pricing", "distribution"]

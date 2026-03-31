@@ -135,8 +135,12 @@ class VectorStore:
             logger.info("[Backfill] No articles.json found")
             return 0
 
-        with open(articles_path, encoding="utf-8") as f:
-            articles: list[dict[str, Any]] = json.load(f)
+        with open(articles_path, encoding="utf-8-sig") as f:
+            content = f.read().strip()
+            if not content:
+                logger.info("[Backfill] articles.json is empty")
+                return 0
+            articles: list[dict[str, Any]] = json.loads(content)
 
         logger.info(f"[Backfill] Found {len(articles)} articles in DB")
 

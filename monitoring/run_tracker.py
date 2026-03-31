@@ -65,8 +65,14 @@ class RunTracker:
     def _load_history(self) -> list:
         if not RUN_LOG_PATH.exists():
             return []
-        with open(RUN_LOG_PATH) as f:
-            return json.load(f)
+        try:
+            with open(RUN_LOG_PATH, encoding="utf-8-sig") as f:
+                content = f.read().strip()
+                if not content:
+                    return []
+                return json.loads(content)
+        except (json.JSONDecodeError, ValueError):
+            return []
     
     def get_last_run(self) -> dict:
         history = self._load_history()
